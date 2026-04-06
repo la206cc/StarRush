@@ -193,8 +193,7 @@ class TabBar {
 
       // 文字颜色和大小
       ctx.fillStyle = isSelected ? this.selectedColor : this.unselectedColor;
-      ctx.font = (isSelected ? 'bold ' : '') +
-                 (isSelected ? this.selectedFontSize : this.fontSize) +
+      ctx.font = (isSelected ? this.selectedFontSize : this.fontSize) +
                  'px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -208,8 +207,7 @@ class TabBar {
         const iconSpacing = 4;
         ctx.font = iconSize + 'px sans-serif';
         const iconW = ctx.measureText(tab.icon).width;
-        ctx.font = (isSelected ? 'bold ' : '') +
-                   (isSelected ? this.selectedFontSize : this.fontSize) +
+        ctx.font = (isSelected ? this.selectedFontSize : this.fontSize) +
                    'px sans-serif';
         const textW = ctx.measureText(tab.name).width;
         const totalW = iconW + iconSpacing + textW;
@@ -219,8 +217,7 @@ class TabBar {
         ctx.font = iconSize + 'px sans-serif';
         ctx.fillText(tab.icon, startX + iconW / 2, cy);
         // 文字
-        ctx.font = (isSelected ? 'bold ' : '') +
-                   (isSelected ? this.selectedFontSize : this.fontSize) +
+        ctx.font = (isSelected ? this.selectedFontSize : this.fontSize) +
                    'px sans-serif';
         ctx.fillText(tab.name, startX + iconW + iconSpacing + textW / 2, cy);
       } else {
@@ -344,11 +341,15 @@ class TabBar {
    */
   handleClick(px, py) {
     const index = this.hitTest(px, py);
-    if (index >= 0 && index !== this.selectedIndex) {
-      this.selectTab(index);
+    if (index >= 0) {
+      if (index !== this.selectedIndex) {
+        this.selectTab(index);
+      } else {
+        if (this.onChange) {
+          this.onChange(index, this.tabs[index], this.selectedIndex);
+        }
+      }
       return true;
-    } else if (index >= 0) {
-      return true; // 点中了已选中的 tab
     }
     return false;
   }

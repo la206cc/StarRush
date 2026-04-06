@@ -51,6 +51,9 @@ HomeScene.prototype.onEnter = function (params) {
   console.log('[HomeScene] onEnter');
   var self = this;
 
+  this.tabBar.selectedIndex = 0;
+  this.tabBar._updateTabRegions();
+
   this.touchManager.registerArea('chapter', 275, 560, 200, 200, function () {
     self._showToast = '章节功能即将开放';
   });

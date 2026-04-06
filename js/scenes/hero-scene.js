@@ -1,7 +1,3 @@
-/**
- * 英雄系统场景 - HeroScene
- * 参考 heroes.html 还原英雄界面
- */
 const UI = require('../ui/index');
 
 var DESIGN_W = 750;
@@ -42,7 +38,8 @@ var LOCAL_HEROES = [
     skills: [
       { icon: '🔥', name: '重击', desc: '对单体造成{x}%伤害', levels: [150, 170, 200], unlockLv: [1, 5, 10] },
       { icon: '🛡️', name: '铁壁', desc: '减伤{x}%持续3秒', levels: [20, 30, 40], unlockLv: [3, 8, 15] },
-      { icon: '💥', name: '狂暴', desc: '攻速提升{x}%持续5秒', levels: [30, 50, 70], unlockLv: [7, 12, 20] }
+      { icon: '💥', name: '狂暴', desc: '攻速提升{x}%持续5秒', levels: [30, 50, 70], unlockLv: [7, 12, 20] },
+      { icon: '⚡', name: '冲锋', desc: '突进并造成{x}%伤害', levels: [100, 130, 160], unlockLv: [5, 10, 15] }
     ]
   },
   {
@@ -62,7 +59,8 @@ var LOCAL_HEROES = [
     skills: [
       { icon: '✨', name: '光子弹', desc: '单体{x}%伤害', levels: [180, 220, 280], unlockLv: [1, 5, 10] },
       { icon: '🌀', name: '折射', desc: '弹射{x}个目标', levels: [2, 3, 4], unlockLv: [4, 9, 15] },
-      { icon: '💫', name: '超载', desc: '暴击率+{x}%', levels: [15, 25, 40], unlockLv: [8, 14, 20] }
+      { icon: '💫', name: '超载', desc: '暴击率+{x}%', levels: [15, 25, 40], unlockLv: [8, 14, 20] },
+      { icon: '🌟', name: '聚能', desc: '下次攻击伤害+x%', levels: [50, 80, 120], unlockLv: [6, 12, 18] }
     ]
   },
   {
@@ -82,28 +80,11 @@ var LOCAL_HEROES = [
     skills: [
       { icon: '💚', name: '治愈', desc: '基于攻击力{x}%转化治疗量', levels: [80, 100, 130], unlockLv: [1, 5, 10] },
       { icon: '🌿', name: '再生', desc: '攻击力{x}%持续回血/秒', levels: [20, 35, 50], unlockLv: [3, 8, 15] },
-      { icon: '🌟', name: '复苏', desc: '攻击力{x}%复活血量', levels: [150, 250, 400], unlockLv: [7, 12, 20] }
+      { icon: '🌟', name: '复苏', desc: '攻击力{x}%复活血量', levels: [150, 250, 400], unlockLv: [7, 12, 20] },
+      { icon: '🛡️', name: '护盾', desc: '生成吸收{x}%攻击力的护盾', levels: [60, 90, 130], unlockLv: [5, 11, 17] }
     ]
   }
 ];
-
-var CATEGORY_COLORS = {
-  crystal: '#4A9EFF',
-  energy: '#B44AFF',
-  source: '#4AE68A'
-};
-
-var CATEGORY_NAMES = {
-  crystal: '晶矿',
-  energy: '星能',
-  source: '源质'
-};
-
-var CATEGORY_ICONS = {
-  crystal: '💎',
-  energy: '⚡',
-  source: '🧪'
-};
 
 function HeroScene(game) {
   this.game = game;
@@ -114,16 +95,9 @@ function HeroScene(game) {
 
   this.heroes = JSON.parse(JSON.stringify(LOCAL_HEROES));
   this.selectedHeroIdx = 0;
-  this.sortMode1 = 'level';
-  this.sortMode2 = '';
-  this.typeFilter = 'all';
 
   this.toastMsg = null;
   this.toastTimer = 0;
-
-  this.skillPopupHero = null;
-  this.skillPopupIdx = -1;
-  this.showSkillPopup = false;
 
   this._initUI();
 }
@@ -150,67 +124,53 @@ HeroScene.prototype.onEnter = function(params) {
   console.log('[HeroScene] onEnter');
   var self = this;
 
-  this.touchManager.registerArea('back-btn', 10, 10, 100, 44, function() {
+  this._registerTouchAreas();
+};
+
+HeroScene.prototype._registerTouchAreas = function() {
+  var self = this;
+
+  this.touchManager.registerArea('back-btn', 10, 70, 60, 60, function() {
     self.game.sceneManager.switchScene('home');
   });
 
-  this._registerHeroCardAreas();
-  this._registerDetailAreas();
-};
+  var avatarCenterX = DESIGN_W / 6;
+  var avatarY = 140;
+  var avatarSize = 120;
 
-HeroScene.prototype._registerHeroCardAreas = function() {
-  var self = this;
-  var gridY = 520;
-  var cardW = 130;
-  var cardH = 150;
-  var gap = 10;
-  var cols = 5;
-  var startX = 20;
-  var startY = gridY;
-
-  this.touchManager.registerArea('hero-cards', 0, gridY, DESIGN_W, DESIGN_H - gridY - 80, function(id, x, y) {
-    var col = Math.floor((x - startX) / (cardW + gap));
-    var row = Math.floor((y - startY) / (cardH + gap));
-    if (col >= 0 && col < cols) {
-      var idx = row * cols + col;
-      var sortedHeroes = self._getSortedHeroes();
-      if (idx >= 0 && idx < sortedHeroes.length) {
-        self.selectedHeroIdx = self.heroes.findIndex(function(h) { return h.id === sortedHeroes[idx].id; });
-      }
-    }
-  });
-};
-
-HeroScene.prototype._registerDetailAreas = function() {
-  var self = this;
-
-  this.touchManager.registerArea('hero-nav-left', 180, 200, 50, 50, function() {
+  this.touchManager.registerArea('nav-left', avatarCenterX - 150, avatarY + 40, 50, 50, function() {
     self._switchHero(-1);
   });
 
-  this.touchManager.registerArea('hero-nav-right', 520, 200, 50, 50, function() {
+  this.touchManager.registerArea('nav-right', avatarCenterX + 100, avatarY + 40, 50, 50, function() {
     self._switchHero(1);
   });
 
-  this.touchManager.registerArea('levelup-btn', 200, 380, 150, 44, function() {
-    self._levelUpHero();
+  var gridStartY = 740;
+  var cardW = 210;
+  var cardH = 260;
+  var gap = 20;
+  var startX = (DESIGN_W - (cardW * 3 + gap * 1)) / 2;
+
+  for (var i = 0; i < this.heroes.length; i++) {
+    var col = i % 3;
+    var row = Math.floor(i / 3);
+    var x = startX + col * (cardW + gap);
+    var y = gridStartY + row * (cardH + gap);
+
+    (function(idx) {
+      self.touchManager.registerArea('hero-card-' + idx, x, y, cardW, cardH, function() {
+        self.selectedHeroIdx = idx;
+      });
+    })(i);
+  }
+
+  this.touchManager.registerArea('enhance-btn', 80, DESIGN_H - 90, 260, 56, function() {
+    self._enhanceHero();
   });
 
-  this.touchManager.registerArea('stageup-btn', 400, 380, 150, 44, function() {
-    self._stageUpHero();
-  });
-
-  this.touchManager.registerArea('skill-slots', 580, 100, 80, 200, function(id, x, y) {
-    var slotIdx = Math.floor((y - 100) / 60);
-    if (slotIdx >= 0 && slotIdx < 3) {
-      self._openSkillPopup(slotIdx);
-    }
-  });
-
-  this.touchManager.registerArea('skill-popup-close', 0, 0, DESIGN_W, DESIGN_H, function() {
-    if (self.showSkillPopup) {
-      self.showSkillPopup = false;
-    }
+  this.touchManager.registerArea('deploy-btn', 410, DESIGN_H - 90, 260, 56, function() {
+    self._deployHero();
   });
 };
 
@@ -249,329 +209,300 @@ HeroScene.prototype.render = function(ctx) {
   if (this.resourceBar) {
     this.resourceBar.render(ctx);
   }
-  this._renderBackBtn(ctx);
-  this._renderHeroDetail(ctx);
-  this._renderHeroGrid(ctx);
+
+  this._renderHeroDetailPanel(ctx);
+  this._renderHeroCardGrid(ctx);
 
   if (this.toastMsg) {
     this._renderToast(ctx);
   }
-
-  if (this.showSkillPopup) {
-    this._renderSkillPopup(ctx);
-  }
 };
 
-HeroScene.prototype._renderBackBtn = function(ctx) {
-  ctx.fillStyle = 'rgba(79, 195, 247, 0.2)';
-  this._drawRoundRect(ctx, 10, 70, 100, 36, 8);
-  ctx.fill();
-
-  ctx.font = '16px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#4fc3f7';
-  ctx.fillText('← 返回基地', 60, 88);
-};
-
-HeroScene.prototype._renderHeroDetail = function(ctx) {
+HeroScene.prototype._renderHeroDetailPanel = function(ctx) {
   var hero = this.heroes[this.selectedHeroIdx];
   if (!hero) return;
 
-  var panelY = 115;
-  var panelH = 355;
+  var panelX = 15;
+  var panelY = 70;
+  var panelW = DESIGN_W - 30;
+  var panelH = 650;
 
   ctx.fillStyle = 'rgba(11, 22, 40, 0.95)';
-  this._drawRoundRect(ctx, 10, panelY, DESIGN_W - 20, panelH, 12);
+  this._drawRoundRect(ctx, panelX, panelY, panelW, panelH, 16);
   ctx.fill();
 
   ctx.strokeStyle = 'rgba(26, 42, 68, 1)';
-  ctx.lineWidth = 1;
-  this._drawRoundRect(ctx, 10, panelY, DESIGN_W - 20, panelH, 12);
+  ctx.lineWidth = 1.5;
+  this._drawRoundRect(ctx, panelX, panelY, panelW, panelH, 16);
   ctx.stroke();
 
-  this._renderStatBars(ctx, hero, 20, panelY + 15);
-  this._renderHeroCenter(ctx, hero, 180, panelY + 20);
-  this._renderSkillSlots(ctx, hero, 590, panelY + 20);
-  this._renderActionButtons(ctx, hero, panelY + 280);
+  this._renderPanelHeader(ctx, hero, panelX, panelY, panelW);
+  this._renderAvatarSection(ctx, hero, panelX, panelY, panelW);
+  this._renderStatsSection(ctx, hero, panelX, panelY, panelW);
+  this._renderSkillsGrid(ctx, hero, panelX, panelY, panelW);
 };
 
-HeroScene.prototype._renderStatBars = function(ctx, hero, x, y) {
-  var stats = [
-    { label: '生命', value: hero.hp, max: 1000, color: '#4AE68A', cls: 'hp' },
-    { label: '攻击', value: hero.atk, max: 200, color: '#FF6347', cls: 'atk' },
-    { label: '防御', value: Math.round(hero.hp * 0.15), max: 150, color: '#4A9EFF', cls: 'def' },
-    { label: '射程', value: hero.range, max: 300, color: '#FFD700', cls: 'range' },
-    { label: '速度', value: hero.spd, max: 5, color: '#B44AFF', cls: 'spd' }
+HeroScene.prototype._renderPanelHeader = function(ctx, hero, panelX, panelY, panelW) {
+  ctx.beginPath();
+  ctx.arc(panelX + 45, panelY + 35, 28, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(79, 195, 247, 0.15)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(79, 195, 247, 0.6)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.font = '18px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#4fc3f7';
+  ctx.fillText('返回', panelX + 45, panelY + 35);
+};
+
+HeroScene.prototype._renderAvatarSection = function(ctx, hero, panelX, panelY, panelW) {
+  var centerX = panelX + panelW / 2;
+  var avatarY = panelY + 70;
+  var avatarSize = 120;
+
+  ctx.font = 'bold 28px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#FFD700';
+  ctx.fillText('Lv' + hero.level, centerX - 50, avatarY - 30);
+
+  ctx.font = 'bold 32px sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(hero.name, centerX + 40, avatarY - 30);
+
+  ctx.font = '36px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(79, 195, 247, 0.5)';
+  ctx.fillText('◀', centerX - avatarSize / 2 - 35, avatarY + avatarSize / 2);
+
+  ctx.font = '100px sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(hero.emoji, centerX, avatarY + avatarSize / 2);
+
+  ctx.font = '36px sans-serif';
+  ctx.fillStyle = 'rgba(79, 195, 247, 0.5)';
+  ctx.fillText('▶', centerX + avatarSize / 2 + 35, avatarY + avatarSize / 2);
+
+  ctx.font = 'bold 22px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#FFD700';
+  ctx.fillText('战力 ' + this._calcPower(hero), centerX, avatarY + avatarSize + 25);
+};
+
+HeroScene.prototype._renderStatsSection = function(ctx, hero, panelX, panelY, panelW) {
+  var statsY = panelY + 280;
+  var statsW = panelW - 40;
+  var statsX = panelX + 20;
+
+  var mainStats = [
+    { label: '生命', value: hero.hp, color: '#4AE68A' },
+    { label: '攻击', value: hero.atk, color: '#FF6347' },
+    { label: '防御', value: Math.round(hero.hp * 0.15), color: '#4A9EFF' }
   ];
 
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
+  var subStats = [
+    { label: '攻击距离', value: hero.range, color: '#FFD700' },
+    { label: '攻击速度', value: Math.round(hero.spd * 33), color: '#B44AFF' },
+    { label: '移动速度', value: hero.spd.toFixed(1), color: '#00BCD4' }
+  ];
 
-  for (var i = 0; i < stats.length; i++) {
-    var stat = stats[i];
-    var sy = y + i * 52;
+  var statWidth = statsW / 3;
+
+  for (var i = 0; i < mainStats.length; i++) {
+    var stat = mainStats[i];
+    var sx = statsX + i * statWidth;
 
     ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#8899aa';
-    ctx.fillText(stat.label, x, sy + 8);
+    ctx.fillText(stat.label, sx + statWidth / 2, statsY);
 
-    var barX = x + 40;
-    var barW = 100;
-    var barH = 10;
+    ctx.font = 'bold 32px sans-serif';
+    ctx.fillStyle = stat.color;
+    ctx.fillText(stat.value, sx + statWidth / 2, statsY + 38);
+  }
 
-    ctx.fillStyle = '#0f1e33';
-    this._drawRoundRect(ctx, barX, sy + 2, barW, barH, 5);
-    ctx.fill();
+  var subStatsY = statsY + 70;
 
-    var pct = Math.min(100, Math.max(2, (stat.value / stat.max) * 100));
-    var fillW = barW * pct / 100;
+  for (var j = 0; j < subStats.length; j++) {
+    var subStat = subStats[j];
+    var ssx = statsX + j * statWidth;
 
-    var gradient = ctx.createLinearGradient(barX, 0, barX + fillW, 0);
-    gradient.addColorStop(0, stat.color);
-    gradient.addColorStop(1, this._adjustColor(stat.color, -30));
-    ctx.fillStyle = gradient;
-    this._drawRoundRect(ctx, barX, sy + 2, fillW, barH, 5);
-    ctx.fill();
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#8899aa';
+    ctx.fillText(subStat.label, ssx + statWidth / 2, subStatsY);
 
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'right';
-    ctx.fillText(stat.value, x + 150, sy + 8);
-    ctx.textAlign = 'left';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillStyle = subStat.color;
+    ctx.fillText(subStat.value, ssx + statWidth / 2, subStatsY + 30);
   }
 };
 
-HeroScene.prototype._renderHeroCenter = function(ctx, hero, x, y) {
-  var centerX = x + 180;
+HeroScene.prototype._renderSkillsGrid = function(ctx, hero, panelX, panelY, panelW) {
+  var gridY = panelY + 395;
+  var gridX = panelX + 20;
+  var gridW = panelW - 40;
+  var slotW = (gridW - 20) / 2;
+  var slotH = 115;
+  var gap = 20;
 
-  ctx.font = 'bold 24px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(hero.name, centerX, y);
-
-  var attrColor = CATEGORY_COLORS[hero.category];
-  var attrName = CATEGORY_NAMES[hero.category];
-  var attrIcon = CATEGORY_ICONS[hero.category];
-
-  var badgeW = 80;
-  var badgeX = centerX - badgeW / 2;
-  ctx.fillStyle = this._hexToRgba(attrColor, 0.15);
-  this._drawRoundRect(ctx, badgeX, y + 32, badgeW, 24, 12);
-  ctx.fill();
-  ctx.strokeStyle = this._hexToRgba(attrColor, 0.5);
-  ctx.lineWidth = 1;
-  this._drawRoundRect(ctx, badgeX, y + 32, badgeW, 24, 12);
-  ctx.stroke();
-
-  ctx.font = '14px sans-serif';
-  ctx.fillStyle = attrColor;
-  ctx.fillText(attrIcon + ' ' + attrName, centerX, y + 36);
-
-  ctx.font = '18px sans-serif';
-  ctx.fillStyle = 'rgba(79, 195, 247, 0.4)';
+  ctx.font = '16px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('◀', x - 10, y + 100);
-
-  ctx.font = '72px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(hero.emoji, centerX, y + 70);
-
-  ctx.font = '18px sans-serif';
-  ctx.fillStyle = 'rgba(79, 195, 247, 0.4)';
-  ctx.textAlign = 'right';
-  ctx.fillText('▶', x + 370, y + 100);
-
-  this._renderStageStars(ctx, hero.stage, centerX - 80, y + 165);
-
-  ctx.font = '14px sans-serif';
-  ctx.textAlign = 'center';
   ctx.fillStyle = '#8899aa';
-  ctx.fillText('Lv.' + hero.level + ' · 战力 ' + this._calcPower(hero), centerX, y + 195);
-};
+  ctx.fillText('技能列表', gridX, gridY);
 
-HeroScene.prototype._renderStageStars = function(ctx, stage, x, y) {
-  var starSize = 20;
-  var gap = 4;
-  var colors = ['#FFD700', '#4A9EFF', '#4AE68A', '#E0B0FF'];
-
-  if (stage === 0) {
-    for (var i = 0; i < 5; i++) {
-      ctx.font = starSize + 'px sans-serif';
-      ctx.fillStyle = '#444466';
-      ctx.fillText('☆', x + i * (starSize + gap), y);
-    }
-    return;
-  }
-
-  var tier = Math.floor((stage - 1) / 5);
-  var newCount = ((stage - 1) % 5) + 1;
-  var prevColor = tier > 0 ? colors[tier - 1] : '#444466';
-  var curColor = colors[Math.min(tier, 3)];
-
-  for (var j = 0; j < 5; j++) {
-    ctx.font = starSize + 'px sans-serif';
-    ctx.fillStyle = j < newCount ? curColor : prevColor;
-    ctx.fillText('★', x + j * (starSize + gap), y);
-  }
-
-  ctx.font = '12px sans-serif';
-  ctx.fillStyle = '#8899aa';
-  ctx.fillText(stage + '阶', x + 5 * (starSize + gap) + 8, y - 4);
-};
-
-HeroScene.prototype._renderSkillSlots = function(ctx, hero, x, y) {
   var skills = hero.skills || [];
 
-  for (var i = 0; i < 3; i++) {
-    var skill = skills[i];
-    var sy = y + i * 65;
-    var slotSize = 50;
+  for (var row = 0; row < 2; row++) {
+    for (var col = 0; col < 2; col++) {
+      var idx = row * 2 + col;
+      var skill = skills[idx];
+      var slotX = gridX + col * (slotW + gap);
+      var slotY = gridY + 25 + row * (slotH + gap);
 
-    ctx.fillStyle = 'rgba(13, 26, 46, 0.8)';
-    this._drawRoundRect(ctx, x, sy, slotSize, slotSize, 12);
-    ctx.fill();
+      ctx.fillStyle = 'rgba(13, 26, 46, 0.8)';
+      this._drawRoundRect(ctx, slotX, slotY, slotW, slotH, 12);
+      ctx.fill();
 
-    ctx.strokeStyle = 'rgba(26, 42, 68, 1)';
-    ctx.lineWidth = 2;
-    this._drawRoundRect(ctx, x, sy, slotSize, slotSize, 12);
-    ctx.stroke();
+      ctx.strokeStyle = 'rgba(26, 42, 68, 1)';
+      ctx.lineWidth = 1.5;
+      this._drawRoundRect(ctx, slotX, slotY, slotW, slotH, 12);
+      ctx.stroke();
 
-    if (skill) {
-      var lv = this._getSkillLevel(skill, hero.level);
-      var isLocked = lv === 0;
+      if (skill) {
+        var lv = this._getSkillLevel(skill, hero.level);
+        var isLocked = lv === 0;
 
-      if (isLocked) {
-        ctx.globalAlpha = 0.3;
+        if (isLocked) {
+          ctx.globalAlpha = 0.35;
+        }
+
+        ctx.font = 'bold 18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = isLocked ? '#666666' : '#ffffff';
+        ctx.fillText(skill.name, slotX + 15, slotY + 15);
+
+        if (lv > 0) {
+          ctx.font = '12px sans-serif';
+          ctx.fillStyle = '#B44AFF';
+          ctx.fillText('Lv.' + lv, slotX + slotW - 45, slotY + 17);
+        } else {
+          ctx.font = '12px sans-serif';
+          ctx.fillStyle = '#666666';
+          ctx.fillText('未解锁', slotX + slotW - 50, slotY + 17);
+        }
+
+        ctx.font = '13px sans-serif';
+        ctx.fillStyle = isLocked ? '#555555' : '#aabbcc';
+        var descText = lv > 0 ? skill.desc.replace('{x}', skill.levels[lv - 1]) : skill.desc;
+        
+        var words = descText.split('');
+        var line = '';
+        var lineY = slotY + 45;
+        var maxLines = 3;
+        var currentLine = 0;
+        
+        for (var c = 0; c < words.length && currentLine < maxLines; c++) {
+          var testLine = line + words[c];
+          var metrics = ctx.measureText(testLine);
+          if (metrics.width > slotW - 30 && c > 0) {
+            ctx.fillText(line, slotX + 15, lineY);
+            line = words[c];
+            lineY += 20;
+            currentLine++;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line && currentLine < maxLines) {
+          ctx.fillText(line, slotX + 15, lineY);
+        }
+
+        ctx.globalAlpha = 1;
       }
-
-      ctx.font = '24px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(skill.icon, x + slotSize / 2, sy + slotSize / 2);
-
-      if (lv > 0) {
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillStyle = '#B44AFF';
-        ctx.textAlign = 'right';
-        ctx.fillText('Lv' + lv, x + slotSize - 4, sy + slotSize - 6);
-      }
-
-      ctx.globalAlpha = 1;
     }
   }
 };
 
-HeroScene.prototype._renderActionButtons = function(ctx, hero, y) {
-  var lvCost = HERO_CONFIG.levelCostBase + hero.level * HERO_CONFIG.levelCostPerLv;
-  var stCost = hero.stage >= HERO_CONFIG.stageMaxLevel ? null :
-               (HERO_CONFIG.stageCostBase + hero.stage * HERO_CONFIG.stageCostPerStage);
-  var stageRes = HERO_CONFIG.stageCurrencyMap[hero.category] ||
-                 { resource: 'essence', icon: '🧪', name: '源质' };
+HeroScene.prototype._renderHeroCardGrid = function(ctx) {
+  var gridStartY = 740;
+  var cardW = 210;
+  var cardH = 260;
+  var gap = 20;
+  var cols = 3;
+  var startX = (DESIGN_W - (cardW * cols + gap * (cols - 1))) / 2;
 
-  ctx.fillStyle = 'rgba(74, 230, 138, 0.2)';
-  this._drawRoundRect(ctx, 120, y, 200, 44, 10);
-  ctx.fill();
-  ctx.strokeStyle = '#4AE68A';
-  ctx.lineWidth = 1;
-  this._drawRoundRect(ctx, 120, y, 200, 44, 10);
-  ctx.stroke();
-
-  ctx.font = 'bold 16px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#4AE68A';
-  ctx.fillText('升级 🪙' + lvCost, 220, y + 22);
-
-  if (stCost !== null) {
-    ctx.fillStyle = 'rgba(255, 152, 0, 0.2)';
-    this._drawRoundRect(ctx, 340, y, 200, 44, 10);
-    ctx.fill();
-    ctx.strokeStyle = '#ff9800';
-    ctx.lineWidth = 1;
-    this._drawRoundRect(ctx, 340, y, 200, 44, 10);
-    ctx.stroke();
-
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillStyle = '#ff9800';
-    ctx.fillText('进阶 ' + stageRes.icon + stCost, 440, y + 22);
-  } else {
-    ctx.fillStyle = 'rgba(100, 100, 100, 0.3)';
-    this._drawRoundRect(ctx, 340, y, 200, 44, 10);
-    ctx.fill();
-
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillStyle = '#666666';
-    ctx.fillText('已满阶', 440, y + 22);
-  }
-};
-
-HeroScene.prototype._renderHeroGrid = function(ctx) {
-  var sortedHeroes = this._getSortedHeroes();
-  var gridY = 520;
-  var cardW = 130;
-  var cardH = 150;
-  var gap = 10;
-  var cols = 5;
-  var startX = 20;
-  var startY = gridY;
-
-  for (var i = 0; i < sortedHeroes.length; i++) {
-    var hero = sortedHeroes[i];
+  for (var i = 0; i < this.heroes.length; i++) {
+    var hero = this.heroes[i];
     var col = i % cols;
     var row = Math.floor(i / cols);
     var x = startX + col * (cardW + gap);
-    var y = startY + row * (cardH + gap);
+    var y = gridStartY + row * (cardH + gap);
 
-    var isSelected = hero.id === this.heroes[this.selectedHeroIdx].id;
+    var isSelected = i === this.selectedHeroIdx;
     this._renderHeroCard(ctx, hero, x, y, cardW, cardH, isSelected);
   }
 };
 
 HeroScene.prototype._renderHeroCard = function(ctx, hero, x, y, w, h, isSelected) {
-  var catColor = CATEGORY_COLORS[hero.category];
-
-  ctx.fillStyle = 'rgba(13, 26, 46, 0.8)';
-  this._drawRoundRect(ctx, x, y, w, h, 12);
+  ctx.fillStyle = 'rgba(13, 26, 46, 0.85)';
+  this._drawRoundRect(ctx, x, y, w, h, 16);
   ctx.fill();
 
   if (isSelected) {
     ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 2;
-    ctx.shadowColor = 'rgba(255, 215, 0, 0.3)';
-    ctx.shadowBlur = 8;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = 'rgba(255, 215, 0, 0.4)';
+    ctx.shadowBlur = 12;
   } else {
-    ctx.strokeStyle = this._hexToRgba(catColor, 0.35);
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(79, 195, 247, 0.3)';
+    ctx.lineWidth = 1.5;
     ctx.shadowBlur = 0;
   }
-  this._drawRoundRect(ctx, x, y, w, h, 12);
+  this._drawRoundRect(ctx, x, y, w, h, 16);
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  ctx.font = '40px sans-serif';
+  ctx.font = '18px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  var stars = '';
+  for (var s = 0; s < 5; s++) {
+    stars += '★';
+  }
+  ctx.fillStyle = '#FFD700';
+  ctx.fillText(stars, x + 12, y + 12);
+
+  ctx.font = '60px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(hero.emoji, x + w / 2, y + 50);
+  ctx.fillText(hero.emoji, x + w / 2, y + 100);
 
-  ctx.font = 'bold 14px sans-serif';
+  ctx.font = 'bold 20px sans-serif';
+  ctx.textAlign = 'center';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(hero.name, x + w / 2, y + 95);
+  ctx.fillText(hero.name, x + w / 2, y + 165);
 
-  ctx.font = '12px sans-serif';
+  ctx.font = '16px sans-serif';
   ctx.fillStyle = '#8899aa';
-  ctx.fillText('Lv.' + hero.level, x + w / 2, y + 115);
+  ctx.fillText('Lv.' + hero.level, x + w / 2, y + 195);
 
-  var dotSize = 6;
-  var dotY = y + 135;
-  ctx.fillStyle = catColor;
-  ctx.beginPath();
-  ctx.arc(x + w / 2, dotY, dotSize / 2, 0, Math.PI * 2);
+  ctx.fillStyle = isSelected ? 'rgba(255, 215, 0, 0.15)' : 'rgba(79, 195, 247, 0.1)';
+  this._drawRoundRect(ctx, x + 20, y + h - 55, w - 40, 40, 10);
   ctx.fill();
+
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = isSelected ? '#FFD700' : '#4fc3f7';
+  ctx.fillText('战力 ' + this._calcPower(hero), x + w / 2, y + h - 35);
 };
 
 HeroScene.prototype._renderToast = function(ctx) {
@@ -582,7 +513,7 @@ HeroScene.prototype._renderToast = function(ctx) {
   var tw = ctx.measureText(this.toastMsg).width + 60;
   var th = 50;
   var tx = (W - tw) / 2;
-  var ty = H - 200;
+  var ty = H - 250;
 
   ctx.fillStyle = 'rgba(40, 40, 60, 0.9)';
   this._drawRoundRect(ctx, tx, ty, tw, th, 14);
@@ -592,138 +523,6 @@ HeroScene.prototype._renderToast = function(ctx) {
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffd740';
   ctx.fillText(this.toastMsg, W / 2, ty + th / 2);
-};
-
-HeroScene.prototype._renderSkillPopup = function(ctx) {
-  var W = DESIGN_W;
-  var H = DESIGN_H;
-
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-  ctx.fillRect(0, 0, W, H);
-
-  var hero = this.heroes[this.selectedHeroIdx];
-  if (!hero || !hero.skills) return;
-  var skill = hero.skills[this.skillPopupIdx];
-  if (!skill) return;
-
-  var curLv = this._getSkillLevel(skill, hero.level);
-
-  var popupW = 600;
-  var popupH = 400;
-  var popupX = (W - popupW) / 2;
-  var popupY = (H - popupH) / 2;
-
-  ctx.fillStyle = 'rgba(13, 26, 46, 0.95)';
-  this._drawRoundRect(ctx, popupX, popupY, popupW, popupH, 14);
-  ctx.fill();
-
-  ctx.strokeStyle = 'rgba(26, 42, 68, 1)';
-  ctx.lineWidth = 2;
-  this._drawRoundRect(ctx, popupX, popupY, popupW, popupH, 14);
-  ctx.stroke();
-
-  ctx.font = '36px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(skill.icon, popupX + 20, popupY + 40);
-
-  ctx.font = 'bold 20px sans-serif';
-  ctx.fillStyle = '#ffffff';
-  var skillTitle = skill.name;
-  if (curLv > 0) {
-    skillTitle += ' Lv.' + curLv;
-  } else {
-    skillTitle += ' (未解锁)';
-  }
-  ctx.fillText(skillTitle, popupX + 70, popupY + 35);
-
-  ctx.font = '14px sans-serif';
-  ctx.fillStyle = '#8899aa';
-  var descText = curLv > 0 ? skill.desc.replace('{x}', skill.levels[curLv - 1]) : '达到等级后自动解锁';
-  ctx.fillText(descText, popupX + 70, popupY + 58);
-
-  ctx.font = '12px sans-serif';
-  ctx.fillStyle = '#8899aa';
-  ctx.fillText('技能随角色等级自动提升，不单独升级', popupX + 20, popupY + 90);
-
-  for (var i = 0; i < skill.levels.length; i++) {
-    var lv = i + 1;
-    var rowY = popupY + 120 + i * 60;
-    var unlocked = hero.level >= skill.unlockLv[i];
-    var isCurrent = lv === curLv;
-
-    if (isCurrent) {
-      ctx.fillStyle = 'rgba(180, 74, 255, 0.15)';
-      this._drawRoundRect(ctx, popupX + 20, rowY, popupW - 40, 50, 8);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(180, 74, 255, 0.3)';
-      ctx.lineWidth = 1;
-      this._drawRoundRect(ctx, popupX + 20, rowY, popupW - 40, 50, 8);
-      ctx.stroke();
-    } else {
-      ctx.fillStyle = 'rgba(15, 30, 50, 0.6)';
-      this._drawRoundRect(ctx, popupX + 20, rowY, popupW - 40, 50, 8);
-      ctx.fill();
-    }
-
-    ctx.globalAlpha = unlocked ? 1 : 0.35;
-
-    ctx.font = 'bold 14px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#B44AFF';
-    ctx.fillText('+' + lv, popupX + 35, rowY + 25);
-
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = '#cccccc';
-    var levelDesc = skill.desc.replace('{x}', skill.levels[i]);
-    ctx.fillText(levelDesc, popupX + 70, rowY + 25);
-
-    ctx.textAlign = 'right';
-    ctx.fillStyle = unlocked ? '#4AE68A' : '#666666';
-    ctx.fillText(unlocked ? '✅' : 'Lv.' + skill.unlockLv[i], popupX + popupW - 35, rowY + 25);
-
-    ctx.globalAlpha = 1;
-  }
-
-  ctx.fillStyle = 'rgba(79, 195, 247, 0.2)';
-  this._drawRoundRect(ctx, popupX + (popupW - 150) / 2, popupY + popupH - 55, 150, 40, 8);
-  ctx.fill();
-
-  ctx.font = 'bold 16px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#4fc3f7';
-  ctx.fillText('关闭', popupX + popupW / 2, popupY + popupH - 35);
-};
-
-HeroScene.prototype._getSortedHeroes = function() {
-  var list = this.heroes.slice();
-
-  if (this.typeFilter !== 'all') {
-    list = list.filter(function(h) { return h.category === this.typeFilter; }.bind(this));
-  }
-
-  var s1 = this.sortMode1;
-  if (s1 === 'level') {
-    list.sort(function(a, b) { return b.level - a.level; });
-  } else if (s1 === 'stage') {
-    list.sort(function(a, b) { return b.stage - a.stage || b.level - a.level; });
-  } else if (s1 === 'power') {
-    list.sort(function(a, b) { return this._calcPower(b) - this._calcPower(a); }.bind(this));
-  }
-
-  var s2 = this.sortMode2;
-  if (s2 === 'atk') {
-    list.sort(function(a, b) { return b.atk - a.atk; });
-  } else if (s2 === 'def') {
-    list.sort(function(a, b) { return Math.round(b.hp * 0.15) - Math.round(a.hp * 0.15); });
-  } else if (s2 === 'range') {
-    list.sort(function(a, b) { return (parseInt(b.range) || 0) - (parseInt(a.range) || 0); });
-  } else if (s2 === 'spd') {
-    list.sort(function(a, b) { return (parseFloat(a.spd) || 99) - (parseFloat(b.spd) || 99); });
-  }
-
-  return list;
 };
 
 HeroScene.prototype._calcPower = function(hero) {
@@ -751,7 +550,7 @@ HeroScene.prototype._switchHero = function(dir) {
   this.selectedHeroIdx = this.heroes.findIndex(function(h) { return h.id === owned[newIdx].id; });
 };
 
-HeroScene.prototype._levelUpHero = function() {
+HeroScene.prototype._enhanceHero = function() {
   var hero = this.heroes[this.selectedHeroIdx];
   if (!hero) return;
 
@@ -780,43 +579,11 @@ HeroScene.prototype._levelUpHero = function() {
   this._showToast(hero.name + ' 升级到 Lv.' + hero.level + '！');
 };
 
-HeroScene.prototype._stageUpHero = function() {
+HeroScene.prototype._deployHero = function() {
   var hero = this.heroes[this.selectedHeroIdx];
   if (!hero) return;
 
-  if (hero.stage >= HERO_CONFIG.stageMaxLevel) {
-    this._showToast('已达最高阶！');
-    return;
-  }
-
-  var cost = HERO_CONFIG.stageCostBase + hero.stage * HERO_CONFIG.stageCostPerStage;
-  var stageRes = HERO_CONFIG.stageCurrencyMap[hero.category] ||
-                 { resource: 'essence', icon: '🧪', name: '源质' };
-  var resKey = stageRes.resource;
-  var resources = this.game.gameState.resources;
-
-  if ((resources[resKey] || 0) < cost) {
-    this._showToast(stageRes.name + '不足！需要 ' + stageRes.icon + cost);
-    return;
-  }
-
-  resources[resKey] = (resources[resKey] || 0) - cost;
-  hero.stage++;
-
-  var stageBonus = HERO_CONFIG.stageBonus[hero.stage - 1] || 0.35;
-  hero.atk = Math.round(hero.atk * (1 + stageBonus));
-  hero.hp = Math.round(hero.hp * (1 + stageBonus));
-
-  this._showToast(hero.name + ' 进阶到 ' + hero.stage + '阶！');
-};
-
-HeroScene.prototype._openSkillPopup = function(idx) {
-  var hero = this.heroes[this.selectedHeroIdx];
-  if (!hero || !hero.skills || !hero.skills[idx]) return;
-
-  this.skillPopupHero = hero;
-  this.skillPopupIdx = idx;
-  this.showSkillPopup = true;
+  this._showToast(hero.name + ' 已加入出战阵容！');
 };
 
 HeroScene.prototype._showToast = function(msg) {
@@ -837,31 +604,6 @@ HeroScene.prototype._drawRoundRect = function(ctx, x, y, w, h, r) {
   ctx.lineTo(x, y + r);
   ctx.arcTo(x, y, x + r, y, r);
   ctx.closePath();
-};
-
-HeroScene.prototype._hexToRgba = function(hex, alpha) {
-  if (hex.startsWith('rgba') || hex.startsWith('rgb')) return hex;
-  var color = hex.replace('#', '');
-  if (color.length === 3) {
-    color = color[0] + color[0] + color[1] + color[1] + color[2] + color[2];
-  }
-  var num = parseInt(color, 16);
-  var r = (num >> 16) & 255;
-  var g = (num >> 8) & 255;
-  var b = num & 255;
-  return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-};
-
-HeroScene.prototype._adjustColor = function(hex, amount) {
-  var color = hex.replace('#', '');
-  if (color.length === 3) {
-    color = color[0] + color[0] + color[1] + color[1] + color[2] + color[2];
-  }
-  var num = parseInt(color, 16);
-  var r = Math.min(255, Math.max(0, ((num >> 16) & 255) + amount));
-  var g = Math.min(255, Math.max(0, ((num >> 8) & 255) + amount));
-  var b = Math.min(255, Math.max(0, (num & 255) + amount));
-  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 };
 
 module.exports = HeroScene;
