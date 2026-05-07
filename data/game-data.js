@@ -189,12 +189,10 @@ const HERO_TABLE = [
     category: 'crystal',
     attributeType: 'single',
     type: '近战',
-    initLevel: 5, initStage: 2, initAtk: 62, initHp: 345, owned: true,
-    cost: 20, atkSpd: 1.2, range: 80, moveSpd: 3.0, role: 'melee',
+    initLevel: 5, initStage: 2, initAtk: 85, initHp: 500, owned: true,
+    cost: 20, atkSpd: 1.2, range: 80, moveSpd: 60, role: 'melee',
     skills: [
-      { icon: '🔥', name: '重击', desc: '对单体造成{x}%伤害', levels: [150, 170, 200], unlockLv: [1, 5, 10] },
-      { icon: '🛡️', name: '铁壁', desc: '减伤{x}%持续3秒', levels: [20, 30, 40], unlockLv: [3, 8, 15] },
-      { icon: '💥', name: '狂暴', desc: '攻速提升{x}%持续5秒', levels: [30, 50, 70], unlockLv: [7, 12, 20] }
+      { icon: '🔥', name: '重击', desc: '对单体造成{x}%伤害', levels: [150, 170, 200], unlockLv: [1, 5, 10] }
     ]
   },
   {
@@ -205,12 +203,10 @@ const HERO_TABLE = [
     category: 'crystal',
     attributeType: 'single',
     type: '远程',
-    initLevel: 3, initStage: 1, initAtk: 48, initHp: 230, owned: true,
+    initLevel: 3, initStage: 1, initAtk: 70, initHp: 350, owned: true,
     cost: 25, atkSpd: 1.5, range: 200, moveSpd: 0, role: 'ranged',
     skills: [
-      { icon: '🎯', name: '精准射击', desc: '远程{x}%暴击', levels: [20, 35, 50], unlockLv: [1, 5, 10] },
-      { icon: '💣', name: '爆裂弹', desc: 'AOE{x}%伤害', levels: [80, 120, 160], unlockLv: [4, 9, 15] },
-      { icon: '🔒', name: '锁定', desc: '标记目标受伤+{x}%', levels: [15, 25, 40], unlockLv: [8, 14, 20] }
+      { icon: '🎯', name: '精准射击', desc: '远程{x}%暴击', levels: [20, 35, 50], unlockLv: [1, 5, 10] }
     ]
   },
   {
@@ -221,12 +217,10 @@ const HERO_TABLE = [
     category: 'crystal',
     attributeType: 'single',
     type: '坦克',
-    initLevel: 4, initStage: 1, initAtk: 35, initHp: 520, owned: true,
-    cost: 30, atkSpd: 2.0, range: 100, moveSpd: 1.5, role: 'tank',
+    initLevel: 4, initStage: 1, initAtk: 50, initHp: 800, owned: true,
+    cost: 30, atkSpd: 2.0, range: 100, moveSpd: 40, role: 'tank',
     skills: [
-      { icon: '🛡️', name: '坚守', desc: '减伤{x}%', levels: [30, 45, 60], unlockLv: [1, 5, 10] },
-      { icon: '⚡', name: '反击', desc: '受击反弹{x}%伤害', levels: [20, 35, 50], unlockLv: [3, 8, 15] },
-      { icon: '🏔️', name: '不动如山', desc: '免疫控制{x}秒', levels: [2, 3, 5], unlockLv: [7, 12, 20] }
+      { icon: '🛡️', name: '坚守', desc: '减伤{x}%', levels: [30, 45, 60], unlockLv: [1, 5, 10] }
     ]
   },
 
@@ -239,12 +233,10 @@ const HERO_TABLE = [
     category: 'energy',
     attributeType: 'single',
     type: '单体',
-    initLevel: 4, initStage: 2, initAtk: 72, initHp: 210, owned: true,
-    cost: 25, atkSpd: 1.8, range: 250, moveSpd: 2.5, role: 'ranged',
+    initLevel: 4, initStage: 2, initAtk: 90, initHp: 320, owned: true,
+    cost: 25, atkSpd: 1.8, range: 250, moveSpd: 50, role: 'ranged',
     skills: [
-      { icon: '✨', name: '光子弹', desc: '单体{x}%伤害', levels: [180, 220, 280], unlockLv: [1, 5, 10] },
-      { icon: '🌀', name: '折射', desc: '弹射{x}个目标', levels: [2, 3, 4], unlockLv: [4, 9, 15] },
-      { icon: '💫', name: '超载', desc: '暴击率+{x}%', levels: [15, 25, 40], unlockLv: [8, 14, 20] }
+      { icon: '✨', name: '光子弹', desc: '单体{x}%伤害', levels: [180, 220, 280], unlockLv: [1, 5, 10] }
     ]
   },
   {
@@ -255,12 +247,10 @@ const HERO_TABLE = [
     category: 'energy',
     attributeType: 'single',
     type: 'AOE',
-    initLevel: 3, initStage: 1, initAtk: 42, initHp: 250, owned: true,
-    cost: 30, atkSpd: 2.0, range: 150, moveSpd: 2.0, role: 'aoe',
+    initLevel: 3, initStage: 1, initAtk: 60, initHp: 400, owned: true,
+    cost: 30, atkSpd: 2.0, range: 150, moveSpd: 45, role: 'aoe',
     skills: [
-      { icon: '🔥', name: '吐息', desc: '扇形{x}%AOE', levels: [100, 140, 180], unlockLv: [1, 5, 10] },
-      { icon: '🌊', name: '震荡波', desc: '击退+{x}%减速', levels: [20, 35, 50], unlockLv: [4, 9, 15] },
-      { icon: '💀', name: '毁灭', desc: '全屏{x}%伤害', levels: [60, 90, 130], unlockLv: [8, 14, 20] }
+      { icon: '🔥', name: '吐息', desc: '扇形{x}%AOE', levels: [100, 140, 180], unlockLv: [1, 5, 10] }
     ]
   },
   {
@@ -271,12 +261,10 @@ const HERO_TABLE = [
     category: 'energy',
     attributeType: 'single',
     type: '连锁',
-    initLevel: 1, initStage: 1, initAtk: 45, initHp: 200, owned: false,
-    cost: 28, atkSpd: 2.2, range: 180, moveSpd: 2.0, role: 'ranged',
+    initLevel: 1, initStage: 1, initAtk: 45, initHp: 200, owned: true,
+    cost: 28, atkSpd: 2.2, range: 180, moveSpd: 45, role: 'ranged',
     skills: [
-      { icon: '⚡', name: '电弧', desc: '连锁{x}个目标', levels: [3, 4, 6], unlockLv: [1, 5, 10] },
-      { icon: '🔋', name: '充能', desc: '攻击+{x}%', levels: [20, 35, 50], unlockLv: [4, 9, 15] },
-      { icon: '⛈️', name: '雷暴', desc: '范围麻痹{x}秒', levels: [1, 2, 3], unlockLv: [8, 14, 20] }
+      { icon: '⚡', name: '电弧', desc: '连锁{x}个目标', levels: [3, 4, 6], unlockLv: [1, 5, 10] }
     ]
   },
 
@@ -289,13 +277,11 @@ const HERO_TABLE = [
     category: 'source',
     attributeType: 'single',
     type: '治疗',
-    initLevel: 4, initStage: 1, initAtk: 25, initHp: 180, owned: true,
-    cost: 15, atkSpd: 2.5, range: 150, moveSpd: 2.8, role: 'heal',
+    initLevel: 4, initStage: 1, initAtk: 40, initHp: 280, owned: true,
+    cost: 15, atkSpd: 2.5, range: 150, moveSpd: 55, role: 'heal',
     healRatio: 0.8,
     skills: [
-      { icon: '💚', name: '治愈', desc: '基于攻击力{x}%转化治疗量', levels: [80, 100, 130], unlockLv: [1, 5, 10] },
-      { icon: '🌿', name: '再生', desc: '攻击力{x}%持续回血/秒', levels: [20, 35, 50], unlockLv: [3, 8, 15] },
-      { icon: '🌟', name: '复苏', desc: '攻击力{x}%复活血量', levels: [150, 250, 400], unlockLv: [7, 12, 20] }
+      { icon: '💚', name: '治愈', desc: '基于攻击力{x}%转化治疗量', levels: [80, 100, 130], unlockLv: [1, 5, 10] }
     ]
   },
   {
@@ -306,13 +292,11 @@ const HERO_TABLE = [
     category: 'source',
     attributeType: 'single',
     type: '加速',
-    initLevel: 2, initStage: 1, initAtk: 18, initHp: 150, owned: true,
-    cost: 12, atkSpd: 2.8, range: 120, moveSpd: 3.5, role: 'buff',
+    initLevel: 2, initStage: 1, initAtk: 30, initHp: 250, owned: true,
+    cost: 12, atkSpd: 2.8, range: 120, moveSpd: 65, role: 'buff',
     buffRatio: 0.6,
     skills: [
-      { icon: '💨', name: '加速', desc: '基于攻击力{x}%转化移速加成', levels: [60, 80, 100], unlockLv: [1, 5, 10] },
-      { icon: '🏃', name: '冲刺', desc: '攻击力{x}%转化攻速加成', levels: [40, 60, 80], unlockLv: [3, 8, 15] },
-      { icon: '⚡', name: '闪现', desc: '瞬移+无敌{x}秒', levels: [1, 2, 3], unlockLv: [7, 12, 20] }
+      { icon: '💨', name: '加速', desc: '基于攻击力{x}%转化移速加成', levels: [60, 80, 100], unlockLv: [1, 5, 10] }
     ]
   },
   {
@@ -323,13 +307,11 @@ const HERO_TABLE = [
     category: 'source',
     attributeType: 'single',
     type: '护盾',
-    initLevel: 1, initStage: 1, initAtk: 20, initHp: 200, owned: false,
-    cost: 18, atkSpd: 3.0, range: 100, moveSpd: 2.0, role: 'buff',
+    initLevel: 1, initStage: 1, initAtk: 20, initHp: 200, owned: true,
+    cost: 18, atkSpd: 3.0, range: 100, moveSpd: 45, role: 'buff',
     buffRatio: 0.7,
     skills: [
-      { icon: '🛡️', name: '护盾', desc: '基于攻击力{x}%生成护盾', levels: [120, 180, 250], unlockLv: [1, 5, 10] },
-      { icon: '🔰', name: '反射盾', desc: '攻击力{x}%反弹伤害', levels: [40, 60, 90], unlockLv: [4, 9, 15] },
-      { icon: '💎', name: '结晶', desc: '攻击力{x}%全队护盾', levels: [80, 120, 180], unlockLv: [8, 14, 20] }
+      { icon: '🛡️', name: '护盾', desc: '基于攻击力{x}%生成护盾', levels: [120, 180, 250], unlockLv: [1, 5, 10] }
     ]
   }
 ];
@@ -380,7 +362,9 @@ const CHAPTERS = [
           exp: [50, 100]
         },
         enemies: [
-          { id: 'enemy_001', level: 1, count: 3 }
+          { id: 'enemy_001', level: 1, count: 6 },
+          { id: 'enemy_001', level: 1, count: 8 },
+          { id: 'enemy_001', level: 2, count: 8 }
         ],
         stars: 0,
         isUnlocked: true,
@@ -397,7 +381,10 @@ const CHAPTERS = [
           exp: [70, 120]
         },
         enemies: [
-          { id: 'enemy_002', level: 2, count: 4 }
+          { id: 'enemy_001', level: 2, count: 6 },
+          { id: 'enemy_002', level: 2, count: 6 },
+          { id: 'enemy_002', level: 2, count: 8 },
+          { id: 'enemy_001', level: 3, count: 6 }
         ],
         stars: 0,
         isUnlocked: false,
@@ -414,8 +401,10 @@ const CHAPTERS = [
           exp: [90, 150]
         },
         enemies: [
-          { id: 'enemy_003', level: 3, count: 1 },
-          { id: 'enemy_001', level: 2, count: 3 }
+          { id: 'enemy_001', level: 2, count: 8 },
+          { id: 'enemy_002', level: 3, count: 6 },
+          { id: 'enemy_002', level: 3, count: 8 },
+          { id: 'enemy_003', level: 3, count: 1 }
         ],
         stars: 0,
         isUnlocked: false,
@@ -518,10 +507,11 @@ const ENEMY_TEMPLATES = [
     name: '太空史莱姆',
     description: '最低级的宇宙生物',
     quality: 'common',
-    hp: 300,
-    attack: 40,
-    defense: 10,
-    speed: 50,
+    hp: 36,
+    attack: 20,
+    defense: 5,
+    speed: 35,
+    emoji: '👾',
     skills: [
       {
         name: '撞击',
@@ -540,10 +530,11 @@ const ENEMY_TEMPLATES = [
     name: '机械蜘蛛',
     description: '被遗弃的机械生物',
     quality: 'common',
-    hp: 500,
-    attack: 60,
-    defense: 25,
-    speed: 65,
+    hp: 60,
+    attack: 35,
+    defense: 15,
+    speed: 30,
+    emoji: '🕷️',
     skills: [
       {
         name: '机械撕咬',
@@ -569,10 +560,11 @@ const ENEMY_TEMPLATES = [
     name: '暗影领主',
     description: '暗星域的统治者',
     quality: 'rare',
-    hp: 2000,
-    attack: 150,
-    defense: 80,
-    speed: 55,
+    hp: 240,
+    attack: 80,
+    defense: 40,
+    speed: 20,
+    emoji: '👹',
     skills: [
       {
         name: '暗影斩',
@@ -830,6 +822,144 @@ function generateUniqueId(prefix = 'id') {
   return `${prefix}_${timestamp}_${randomStr}`;
 }
 
+// ==================== 战斗中升级选项池 ====================
+
+const BATTLE_UPGRADE_POOL = {
+  // 基础强化类（40%概率）
+  basic: [
+    { id: 'atk_up',   name: '攻击强化', icon: '🔥', desc: '攻击力 +{x}%',     stat: 'atk',    perLevel: 10, type: 'percent' },
+    { id: 'hp_up',    name: '生命强化', icon: '❤️', desc: '生命值 +{x}%',     stat: 'hp',     perLevel: 12, type: 'percent' },
+    { id: 'spd_up',   name: '攻速强化', icon: '⚡', desc: '攻击速度 +{x}%',   stat: 'atkSpd', perLevel: 8,  type: 'percent' },
+    { id: 'def_up',   name: '防御强化', icon: '🛡️', desc: '防御力 +{x}',      stat: 'defense',perLevel: 5,  type: 'flat' },
+    { id: 'range_up', name: '射程强化', icon: '🎯', desc: '攻击距离 +{x}',    stat: 'range',  perLevel: 15, type: 'flat' }
+  ],
+  // 机制升级类（35%概率）
+  mechanic: [
+    { id: 'multi_hit',  name: '多重打击', icon: '💥', desc: '额外攻击 +{x}次',   stat: 'extraHits',   perLevel: 1, type: 'flat', max: 5 },
+    { id: 'split_shot', name: '分裂攻击', icon: '🌀', desc: '分裂 +{x}个方向',   stat: 'splitCount',  perLevel: 1, type: 'flat', max: 4 },
+    { id: 'pierce',     name: '穿透射击', icon: '🏹', desc: '穿透 +{x}个敌人',   stat: 'pierceCount', perLevel: 1, type: 'flat', max: 5 },
+    { id: 'aoe_range',  name: '范围扩大', icon: '💫', desc: 'AOE范围 +{x}%',     stat: 'aoeRange',    perLevel: 20, type: 'percent' },
+    { id: 'chain',      name: '连锁闪电', icon: '⚡', desc: '连锁 +{x}个目标',   stat: 'chainCount',  perLevel: 1, type: 'flat', max: 6 }
+  ],
+  // 特殊效果类（15%概率）
+  special: [
+    { id: 'burn',      name: '灼烧附加', icon: '🔥', desc: '攻击附带灼烧 {x}%概率', stat: 'burnChance',   perLevel: 12, type: 'flat' },
+    { id: 'freeze',    name: '冰冻附加', icon: '❄️', desc: '攻击附带冰冻 {x}%概率', stat: 'freezeChance', perLevel: 8,  type: 'flat' },
+    { id: 'lifesteal', name: '生命汲取', icon: '🧛', desc: '吸血 {x}%',             stat: 'lifesteal',    perLevel: 5,  type: 'flat' },
+    { id: 'crit',      name: '暴击强化', icon: '💢', desc: '暴击率 +{x}%',          stat: 'critChance',   perLevel: 8,  type: 'flat' },
+    { id: 'knockback', name: '击退效果', icon: '💨', desc: '击退距离 +{x}',         stat: 'knockback',    perLevel: 10, type: 'flat' }
+  ],
+  // 组合效果类（10%概率）
+  combo: [
+    { id: 'ally_trigger', name: '协同攻击', icon: '🤝', desc: '触发友军攻击 {x}%概率', stat: 'allyTrigger', perLevel: 10, type: 'flat' },
+    { id: 'heal_aura',    name: '治愈光环', icon: '💚', desc: '每秒回复 {x}%生命',     stat: 'healAura',    perLevel: 2,  type: 'flat' },
+    { id: 'shield',       name: '能量护盾', icon: '🛡️', desc: '护盾值 +{x}%最大生命', stat: 'shieldRatio', perLevel: 8,  type: 'flat' },
+    { id: 'summon',       name: '召唤分身', icon: '👥', desc: '召唤 {x}个分身',        stat: 'summonCount', perLevel: 1,  type: 'flat', max: 3 }
+  ],
+  // 概率权重
+  weights: { basic: 40, mechanic: 35, special: 15, combo: 10 }
+};
+
+// ==================== 英雄强化配置（战斗外） ====================
+
+const HERO_ENHANCE_CONFIG = {
+  // 基础属性强化（第2层）
+  statEnhance: {
+    maxLevel: 10,
+    // 每级效果系数：1级=1.0x, 10级=3.0x
+    levelMultiplier: [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 3.0],
+    // 可强化的属性
+    stats: [
+      { id: 'atk',    name: '攻击力', icon: '⚔️', base: 0.05, resource: 'crystal',    color: '#FF6347' },
+      { id: 'hp',     name: '生命值', icon: '❤️', base: 0.06, resource: 'crystal',    color: '#4AE68A' },
+      { id: 'def',    name: '防御力', icon: '🛡️', base: 0.08, resource: 'crystal',    color: '#4A9EFF' },
+      { id: 'atkSpd', name: '攻速',   icon: '⚡', base: 0.05, resource: 'starEnergy', color: '#FFD700' },
+      { id: 'moveSpd',name: '移速',   icon: '🏃', base: 0.04, resource: 'starEnergy', color: '#00BCD4' },
+      { id: 'crit',   name: '暴击',   icon: '💢', base: 0.03, resource: 'essence',    color: '#FF4081' }
+    ],
+    // 资源消耗（按等级段）
+    costs: [80, 80, 80, 150, 150, 150, 250, 250, 250, 400]
+  },
+  // 技能初始等级强化（第3层）
+  skillEnhance: {
+    maxLevel: 5,
+    // 资源消耗
+    costs: [100, 150, 250, 400, 600]
+  }
+};
+
+/**
+ * 获取战斗升级选项池
+ */
+function getBattleUpgradePool() {
+  return JSON.parse(JSON.stringify(BATTLE_UPGRADE_POOL));
+}
+
+/**
+ * 获取英雄强化配置
+ */
+function getHeroEnhanceConfig() {
+  return JSON.parse(JSON.stringify(HERO_ENHANCE_CONFIG));
+}
+
+/**
+ * 根据英雄生成3个随机战斗升级选项
+ * @param {Object} hero - 英雄数据
+ * @param {Object} currentUpgrades - 当前已有的升级 { upgradeId: level }
+ * @returns {Array} 3个升级选项
+ */
+function generateBattleUpgradeOptions(hero, currentUpgrades) {
+  currentUpgrades = currentUpgrades || {};
+  var pool = BATTLE_UPGRADE_POOL;
+  var categories = ['basic', 'mechanic', 'special', 'combo'];
+  var weights = pool.weights;
+  var totalWeight = weights.basic + weights.mechanic + weights.special + weights.combo;
+
+  var allOptions = [];
+  for (var c = 0; c < categories.length; c++) {
+    var cat = categories[c];
+    var items = pool[cat];
+    if (!items) continue;
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var curLv = currentUpgrades[item.id] || 0;
+      var maxLv = item.max || 10;
+      if (curLv >= maxLv) continue;
+      allOptions.push({
+        id: item.id,
+        name: item.name,
+        icon: item.icon,
+        desc: item.desc.replace('{x}', item.perLevel * (curLv + 1)),
+        stat: item.stat,
+        perLevel: item.perLevel,
+        type: item.type,
+        category: cat,
+        currentLevel: curLv,
+        nextLevel: curLv + 1,
+        weight: weights[cat] / totalWeight
+      });
+    }
+  }
+
+  // 加权随机选择3个不重复选项
+  var selected = [];
+  for (var s = 0; s < 3 && allOptions.length > 0; s++) {
+    var totalW = 0;
+    for (var w = 0; w < allOptions.length; w++) totalW += allOptions[w].weight;
+    var rand = Math.random() * totalW;
+    var cumulative = 0;
+    for (var j = 0; j < allOptions.length; j++) {
+      cumulative += allOptions[j].weight;
+      if (rand <= cumulative) {
+        selected.push(allOptions[j]);
+        allOptions.splice(j, 1);
+        break;
+      }
+    }
+  }
+  return selected;
+}
+
 // ==================== 导出模块 ====================
 
 module.exports = {
@@ -838,6 +968,8 @@ module.exports = {
   HERO_CLASSES,
   HERO_TABLE,
   HERO_UPGRADE_CONFIG,
+  BATTLE_UPGRADE_POOL,
+  HERO_ENHANCE_CONFIG,
 
   // 数据获取函数
   getQualityConfig,
@@ -849,6 +981,9 @@ module.exports = {
   getAchievements,
   getDailyTasks,
   getPvPConfig,
+  getBattleUpgradePool,
+  getHeroEnhanceConfig,
+  generateBattleUpgradeOptions,
 
   // 工具函数
   randomHeroQuality,

@@ -314,7 +314,7 @@ const game = {
       resources: this.gameState.resources,
       heroes: this.gameState.heroes,
       gameProgress: this.gameState.gameProgress,
-      version: '1.0.0',
+      version: '1.1.0',
       savedAt: Date.now()
     };
     storageManager.saveGameData(dataToSave);
